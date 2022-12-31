@@ -5,12 +5,12 @@ jobs:
   # Declare a dependency on the welcome-orb
   print_hello:
     docker:
-      - image: circleci/node:13.8.8
+      - image: circleci/node:13.8.0
     steps:
       - run: echo hello
   print_world:
     docker:
-      - image: circleci/node:13.8.8
+      - image: circleci/node:13.8.0
     steps:
       - run: echo world
 # Orchestrate or schedule a set of jobs
