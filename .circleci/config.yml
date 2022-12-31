@@ -3,20 +3,29 @@ version: 2.1
 # Use a package of configuration called an orb.
 jobs:
   # Declare a dependency on the welcome-orb
-  print_hello:
+  save_hello_world_output:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run: echo hello
-  print_world:
+      - run: mkdir -p workspace
+      - run: echo "text to output here" > workspace/output.txt
+      - persist_to_workspace:
+        # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+        # taken to be the root directory of the workspace.
+          root: workspace
+          # Must be relative path from root
+          paths:
+            - output.txt
+      
+  print_output_file:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run:
-          name: print_world
-          environment:
-            omar: world
-          command: echo $omar
+
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: /tmp/workspace
+      - run: cat output.txt
 
 # Orchestrate or schedule a set of jobs
 workflows:
@@ -24,7 +33,7 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - print_hello
-      - print_world:
+      - save_hello_world_output
+      - print_output_file:
           requires:
-              - print_hello
+              - save_hello_world_output
